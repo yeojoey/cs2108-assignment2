@@ -13,12 +13,12 @@ maxSize = 0
 
 def processVideo(videoPath,fileName):
     global maxSize
-    getAudioClip(videoPath,"./deeplearning/data/audio"+fileName+".wav")
+    getAudioClip(videoPath,"./CS2108-Vine-Dataset/deeplearning/data/audio"+fileName+".wav")
     #vidcap = cv2.VideoCapture(videoPath)
     #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
     #vidcap.release()
     
-    acousticFeature = getAcousticFeature("./deeplearning/data/audio"+fileName+".wav")
+    acousticFeature = getAcousticFeature("./CS2108-Vine-Dataset/deeplearning/data/audio"+fileName+".wav")
     if acousticFeature.shape[0] > maxSize:
         maxSize = acousticFeature.shape[0]
 
@@ -30,7 +30,7 @@ def processVideo(videoPath,fileName):
     
 def preProcess():
     global maxSize
-    
+    global videos
     for file in os.listdir("./CS2108-Vine-Dataset/vine/training"):
         fileName = file[:len(file)-4]
         video = processVideo("./CS2108-Vine-Dataset/vine/training/"+file,fileName)
@@ -50,17 +50,22 @@ def getAcousticFeature(audioPath):
     feature_spect = mat2vec(feature_spect)
     feature_zerocrossing = mat2vec(feature_zerocrossing)
     feature_energy = mat2vec(feature_energy)
-    finalVec = np.concatenate(feature_mfcc,feature_spect,feature_zerocrossing,feature_energy)
+
+    finalVec = np.append(feature_mfcc,feature_spect)
+    finalVec = np.append(finalVec,feature_zerocrossing)
+    finalVec = np.append(finalVec,feature_energy)
 
     return finalVec
 
 def generateVenueDict():
+    global venues
     inputs = [line.rstrip('\n') for line in open("./CS2108-Vine-Dataset/vine-venue-training.txt")]
     for i in range(len(inputs)):
         tmp = inputs[i].split("\t")
         venues[tmp[0]] = tmp[1]
         
 def getVenue(fileName):
+    global venues
     generateVenueDict()
     venue = venues[fileName]
     return venue
