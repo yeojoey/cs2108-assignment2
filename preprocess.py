@@ -13,12 +13,12 @@ maxSize = 0
 
 def processVideo(videoPath,fileName):
     global maxSize
-    getAudioClip(videoPath,"./CS2108-Vine-Dataset/deeplearning/data/audio"+fileName+".wav")
+    getAudioClip(videoPath,"./deeplearning/data/audio"+fileName+".wav")
     #vidcap = cv2.VideoCapture(videoPath)
     #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
     #vidcap.release()
     
-    acousticFeature = getAcousticFeature("./CS2108-Vine-Dataset/deeplearning/data/audio"+fileName+".wav")
+    acousticFeature = getAcousticFeature("./deeplearning/data/audio"+fileName+".wav")
     if acousticFeature.shape[0] > maxSize:
         maxSize = acousticFeature.shape[0]
 
