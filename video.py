@@ -3,4 +3,3 @@ class Video:
         self.name = name
         self.featureVector = featureVector
         self.venue = venue
-    

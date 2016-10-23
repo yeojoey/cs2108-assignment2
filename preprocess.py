@@ -9,18 +9,18 @@ import cv2
 
 videos = []
 venues = {}
-maxSize = 0
+minSize = 0
 
 def processVideo(videoPath,fileName):
-    global maxSize
-    getAudioClip(videoPath,"./deeplearning/data/audio"+fileName+".wav")
+    global minSize
+    getAudioClip(videoPath,"./deeplearning/data/audio/"+fileName+".wav")
     #vidcap = cv2.VideoCapture(videoPath)
     #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
     #vidcap.release()
     
-    acousticFeature = getAcousticFeature("./deeplearning/data/audio"+fileName+".wav")
-    if acousticFeature.shape[0] > maxSize:
-        maxSize = acousticFeature.shape[0]
+    acousticFeature = getAcousticFeature("./deeplearning/data/audio/"+fileName+".wav")
+    if acousticFeature.shape[0] < minSize:
+        minSize = acousticFeature.shape[0]
 
     venue = getVenue(fileName)
     
@@ -28,21 +28,28 @@ def processVideo(videoPath,fileName):
 
     return video
     
-def preProcess():
-    global maxSize
+def preProcess(videoPath,vidCount,venueFile):
+    global minSize
+    global videos
     
-    for file in os.listdir("./CS2108-Vine-Dataset/vine/training"):
+    generateVenueDict(venueFile)
+
+    minSize = 0
+    videos = []
+    for file in os.listdir(videoPath):
         fileName = file[:len(file)-4]
-        video = processVideo("./CS2108-Vine-Dataset/vine/training/"+file,fileName)
+        video = processVideo(videoPath+file,fileName)
         videos.append(video)
 
-    matrix = np.zeros((3000,maxSize))
+    x = np.zeros((vidCount,minSize))
+    y = np.zeros((vidCount,1))
     for row in range(len(videos)):
         vector = videos[row].featureVector
+        y[row][1] = videos[row].venue
         for col in range(len(vector)):
-            matrix[row][col] = vector[col]
+            x[row][col] = vector[col]
 
-    return matrix, videos
+    return x, y
 
 def getAcousticFeature(audioPath):
     feature_mfcc, feature_spect, feature_zerocrossing, feature_energy = getAcousticFeatures(audioPath)
@@ -50,18 +57,23 @@ def getAcousticFeature(audioPath):
     feature_spect = mat2vec(feature_spect)
     feature_zerocrossing = mat2vec(feature_zerocrossing)
     feature_energy = mat2vec(feature_energy)
-    finalVec = np.concatenate(feature_mfcc,feature_spect,feature_zerocrossing,feature_energy)
+
+    finalVec = np.append(feature_mfcc,feature_spect)
+    finalVec = np.append(finalVec,feature_zerocrossing)
+    finalVec = np.append(finalVec,feature_energy)
 
     return finalVec
 
-def generateVenueDict():
-    inputs = [line.rstrip('\n') for line in open("./CS2108-Vine-Dataset/vine-venue-training.txt")]
+def generateVenueDict(venueFile):
+    global venues
+    venues = {}
+    inputs = [line.rstrip('\n') for line in open(venueFile)]
     for i in range(len(inputs)):
         tmp = inputs[i].split("\t")
         venues[tmp[0]] = tmp[1]
         
 def getVenue(fileName):
-    generateVenueDict()
+    global venues
     venue = venues[fileName]
     return venue
 
