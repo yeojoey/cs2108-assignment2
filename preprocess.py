@@ -13,12 +13,12 @@ minSize = 0
 
 def processVideo(videoPath,fileName):
     global minSize
-    getAudioClip(videoPath,"./deeplearning/data/audio"+fileName+".wav")
+    getAudioClip(videoPath,"./deeplearning/data/audio/"+fileName+".wav")
     #vidcap = cv2.VideoCapture(videoPath)
     #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
     #vidcap.release()
     
-    acousticFeature = getAcousticFeature("./deeplearning/data/audio"+fileName+".wav")
+    acousticFeature = getAcousticFeature("./deeplearning/data/audio/"+fileName+".wav")
     if acousticFeature.shape[0] < minSize:
         minSize = acousticFeature.shape[0]
 
@@ -31,6 +31,7 @@ def processVideo(videoPath,fileName):
 def preProcess(videoPath,vidCount,venueFile):
     global minSize
     global videos
+    
     generateVenueDict(venueFile)
 
     minSize = 0
@@ -65,6 +66,7 @@ def getAcousticFeature(audioPath):
 
 def generateVenueDict(venueFile):
     global venues
+    venues = {}
     inputs = [line.rstrip('\n') for line in open(venueFile)]
     for i in range(len(inputs)):
         tmp = inputs[i].split("\t")
