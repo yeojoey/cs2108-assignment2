@@ -9,49 +9,55 @@ import cv2
 
 videos = []
 venues = {}
-minSize = 0
+maxSize = 0
 
 def processVideo(videoPath,fileName):
-    global minSize
+    global maxSize
     if os.path.isfile("./deeplearning/data/audio/"+fileName+".wav") == False :
-        getAudioClip(videoPath,"./deeplearning/data/audio/"+fileName+".wav")
+        try:
+            getAudioClip(videoPath,"./deeplearning/data/audio/"+fileName+".wav")
+        except Exception:
+            print Exception
+        
     #vidcap = cv2.VideoCapture(videoPath)
     #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
     #vidcap.release()
     
     acousticFeature = getAcousticFeature("./deeplearning/data/audio/"+fileName+".wav")
-    if acousticFeature.shape[0] < minSize:
-        minSize = acousticFeature.shape[0]
+    if acousticFeature.shape[0] > maxSize:
+        maxSize = acousticFeature.shape[0]
 
     venue = getVenue(fileName)
     
     video = Video(fileName, acousticFeature, venue)
 
+    
     return video
     
-def preProcess(videoPath,vidCount,venueFile):
-    global minSize
+def preProcess(videoList,vidCount,venueFile):
+    global maxSize
     global videos
     
     generateVenueDict(venueFile)
 
-    minSize = 0
+    maxSize = 0
     videos = []
-    for file in os.listdir(videoPath):
+    for file in videoList:
         print ("Processing:",file)
-        if (file != "1001032302756761600.mp4" or file != "1001088152326610944.mp4"):
-            
-            fileName = file[:len(file)-4]
-            video = processVideo(videoPath+"/"+file,fileName)
-            videos.append(video)
-    print (minSize)
-    x = np.zeros((vidCount,minSize))
+        fileName = file[file.rfind("/")+1:len(file)-4]
+        video = processVideo(file,fileName)
+        videos.append(video)
+        
+    print (maxSize)
+    print (len(videos))
+    x = np.zeros((vidCount,maxSize))
     y = np.zeros((vidCount,1))
+    print (y.shape, x.shape)
     for row in range(len(videos)):
         vector = videos[row].featureVector
-        y[row][1] = videos[row].venue
-        for col in range(len(vector)):
-            x[row][col] = vector[col]
+        y[row][0] = videos[row].venue
+        for col in range(maxSize):
+            x[row][col] = vector[col%len((vector)-1)]
 
     return x, y
 
@@ -79,6 +85,7 @@ def generateVenueDict(venueFile):
 def getVenue(fileName):
     global venues
     venue = venues[fileName]
+    print (fileName,venue)
     return venue
 
             

@@ -7,12 +7,7 @@ import scipy.io as sio
 from sklearn import svm
 from sklearn.metrics import classification_report
 
-counters = np.zeros(30)  
-
 def svm(X_train,Y_train,X_test,Y_gnd):
-    global venues
-    generateVenueDict()
-
     instance_num, class_num = Y_gnd.shape
 
     Y_predicted = np.asmatrix(np.zeros([instance_num, class_num]))
@@ -57,16 +52,12 @@ def kNN(video,matrix,videos):
 
     
 def linearRegression(video,matrix,videos):
-    global venues
-    generateVenueDict()
-    fVector = video.featureVector
+    instance_num, class_num = Y_gnd.shape
 
-    #compare here
+    Y_predicted = np.asmatrix(np.zeros([instance_num, class_num]))
 
+    model = linear_model.LinearRegression()
+    model.fit(X_train, np.ravel(Y_train))
+    Y_predicted = np.asmatrix(model.predict(X_test))
 
-    maxIndex = 0
-    for i in range(len(counters)):
-        if counters[i] > counters[maxIndex]:
-            maxIndex = i
-
-    return venues[str(maxIndex+1)]
+    return Y_predicted
