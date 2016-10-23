@@ -19,9 +19,9 @@ def processVideo(videoPath,fileName):
         except Exception:
             print Exception
         
-    #vidcap = cv2.VideoCapture(videoPath)
-    #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
-    #vidcap.release()
+    vidcap = cv2.VideoCapture(videoPath)
+    keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame/"+fileName+"-")
+    vidcap.release()
     
     acousticFeature = getAcousticFeature("./deeplearning/data/audio/"+fileName+".wav")
     if acousticFeature.shape[0] > maxSize:
@@ -52,7 +52,7 @@ def preProcess(videoList,vidCount,venueFile):
     print (len(videos))
     x = np.zeros((vidCount,maxSize))
     y = np.zeros((vidCount,1))
-    print (y.shape, x.shape)
+    print (x.shape, y.shape)
     for row in range(len(videos)):
         vector = videos[row].featureVector
         y[row][0] = videos[row].venue

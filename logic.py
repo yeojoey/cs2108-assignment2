@@ -1,5 +1,5 @@
 import preprocess as pp
-import classifier
+from classifier import mySVM
 import numpy as np
 import os
 import scipy.io as sio
@@ -7,6 +7,7 @@ import scipy.io as sio
 venues = {}
 
 def preprocess():
+    generateVenueDict()
     if os.path.isfile("./processed.mat") == False :
         videoList = os.listdir("./CS2108-Vine-Dataset/vine/training")
         for i in range(len(videoList)):
@@ -21,16 +22,26 @@ def preprocess():
     print (X_train.shape),(Y_train.shape)
     return X_train , Y_train
     
-def predict(paths,X_train,Y_train):
+def predict(X_train,Y_train,X_test,Y_gnd):
     global venues
-    generateVenueDict()
+    generateVenueDict()    
+    X_test_temp = np.zeros((1,X_train.shape[1]))
+    for i in range(X_train.shape[1]):
+        X_test_temp[0][i] = X_test[0][i%X_test.shape[1]]
+    X_test = X_test_temp
+    print (X_test.shape)
+    
+    Y_predicted = mySVM(X_train,Y_train,X_test,Y_gnd)
+
+    print (venues[str(Y_predicted[0])])
+    return venues[str(Y_predicted[0])]
+
+def processFile(paths):
     videoList = []
     videoList.append(paths)
     X_test, Y_gnd = pp.preProcess(videoList,1,"./CS2108-Vine-Dataset/vine-venue-validation.txt")
-    Y_predicted = classifier.svm(X_train,Y_train,X_test,Y_gnd)
+    return X_test, Y_gnd
 
-    print (Y_predicted.shape)
-    
 def generateVenueDict():
     global venues
     venues = {}
@@ -39,7 +50,6 @@ def generateVenueDict():
         tmp = inputs[i].split("\t")
         venues[tmp[0]] = tmp[1]
 
-X_train, Y_train = preprocess()
-
-for i in range(Y_train.shape[0]):
-    print (Y_train[i][0],venues[Y_train[i][0]])
+#X_train,Y_train = preprocess()
+#X_test,Y_gnd = processFile("./CS2108-Vine-Dataset/vine/validation/1000861821491707904.mp4")
+#predict(X_train,Y_train,X_test,Y_gnd)
