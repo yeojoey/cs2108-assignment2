@@ -13,7 +13,8 @@ minSize = 0
 
 def processVideo(videoPath,fileName):
     global minSize
-    getAudioClip(videoPath,"./deeplearning/data/audio/"+fileName+".wav")
+    if os.path.isfile("./deeplearning/data/audio/"+fileName+".wav") == False :
+        getAudioClip(videoPath,"./deeplearning/data/audio/"+fileName+".wav")
     #vidcap = cv2.VideoCapture(videoPath)
     #keyframes = getKeyFrames(vidcap,"./deeplearning/data/frame"+fileName+"-")
     #vidcap.release()
@@ -37,10 +38,13 @@ def preProcess(videoPath,vidCount,venueFile):
     minSize = 0
     videos = []
     for file in os.listdir(videoPath):
-        fileName = file[:len(file)-4]
-        video = processVideo(videoPath+file,fileName)
-        videos.append(video)
-
+        print ("Processing:",file)
+        if (file != "1001032302756761600.mp4" or file != "1001088152326610944.mp4"):
+            
+            fileName = file[:len(file)-4]
+            video = processVideo(videoPath+"/"+file,fileName)
+            videos.append(video)
+    print (minSize)
     x = np.zeros((vidCount,minSize))
     y = np.zeros((vidCount,1))
     for row in range(len(videos)):
