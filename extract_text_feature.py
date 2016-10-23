@@ -1,4 +1,5 @@
 # imports
+import os
 import process_groundtruths
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -8,18 +9,27 @@ gt = process_groundtruths.gt
 td = gt.training_desc
 tv = gt.training_venue
 
-def makeArray():
+def makeVenueArray():
 
-    arr = [''] * 31 # for number of venues
+    arr = [' '] * 30
+
+    for key, value in tv.items():
+        arr[int(key)-1] = value
+
+    return arr
+
+def makeDocArray():
+
+    arr = [''] * 30 # for number of venues
 
     
     for key, value in td.items():
 
         venue = tv[key]
-        if arr[int(venue)] == "":
-            arr[int(venue)] += value
+        if arr[int(venue)-1] == "":
+            arr[int(venue)-1] += value
         else:
-            arr[int(venue)] = arr[int(venue)]+" "+value
+            arr[int(venue)-1] = arr[int(venue)-1]+" "+value
         
     return arr
 
@@ -31,11 +41,12 @@ def makeBagOfWords(arr):
 
 if __name__ == "__main__":
 
-    a = makeArray()
+    
+    v = makeVenueArray()
+    a = makeDocArray()
     X = makeBagOfWords(a)
     
-    # X is a bag of words matrix where the index = venue id
-    # 0 is EMPTY
+    # X is a bag of words matrix where the index = (venue id - 1)
     #
     # print X.toarray()
     
