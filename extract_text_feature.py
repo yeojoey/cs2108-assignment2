@@ -72,7 +72,11 @@ def classify(doc):
 
 
 def getClassificationReport():
-    
+
+
+    predicted = text_clf.predict(vd)
+
+    print metrics.accuracy_score(vv, predicted)
     print(metrics.classification_report(vv, predicted, target_names=venues))
   
     
