@@ -1,8 +1,6 @@
 # imports
 import os
 
-
-
 class GroundTruths:
 
     def __init__(self, venues, trainingV, validationV, trainingD, validationD):
@@ -23,6 +21,7 @@ def makeDict(venue_name_path):
         d[a[0]] = a[1].strip("\n")
 
     return d
+
 
 
 def makeGroundTruths():
@@ -54,8 +53,7 @@ def getGroundTruths():
 
 gt = makeGroundTruths()
 
-
 if __name__ == "__main__":
 
-    makeGroundTruths()
+    print gt.training_desc[0]
     
