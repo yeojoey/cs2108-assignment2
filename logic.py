@@ -1,5 +1,5 @@
 import preprocess as pp
-from classifier import mySVM
+from classifier import myKNN
 import numpy as np
 import os
 import scipy.io as sio
@@ -31,7 +31,7 @@ def predict(X_train,Y_train,X_test,Y_gnd):
     X_test = X_test_temp
     print (X_test.shape)
     
-    Y_predicted = mySVM(X_train,Y_train,X_test,Y_gnd)
+    Y_predicted = myKNN(X_train,Y_train,X_test,Y_gnd)
 
     print (venues[str(Y_predicted[0])])
     return venues[str(Y_predicted[0])]
