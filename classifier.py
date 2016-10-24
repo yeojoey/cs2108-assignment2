@@ -15,7 +15,7 @@ def mySVM(X_train,Y_train,X_test,Y_gnd):
     Y_predicted = np.asmatrix(np.zeros([instance_num, class_num]))
 
     # 4. Train the classifier.
-    model = svm.SVR(kernel='rbf', degree=3, gamma=0.1, shrinking=True, verbose=False, max_iter=-1)
+    model = svm.SVR(kernel='rbf', degree=3, gamma=0.01, shrinking=True, verbose=False, max_iter=-1)
     model.fit(X_train, np.ravel(Y_train))
     Y_predicted = np.asmatrix(model.predict(X_test))
     print('SVM Train Done.')
